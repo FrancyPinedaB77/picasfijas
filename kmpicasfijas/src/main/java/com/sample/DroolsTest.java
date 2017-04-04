@@ -33,10 +33,7 @@ public class DroolsTest {
         StatefulKnowledgeSession ksession = kbase.newStatefulKnowledgeSession();
         KnowledgeRuntimeLogger logger = KnowledgeRuntimeLoggerFactory.newFileLogger(ksession, "test");
         // go !
-    	Random aleatorio = new Random ();
     	int numeros[]=new int[4];
-    	int numero_adivinar=1234;
-
         int n;
         n = Integer.parseInt(JOptionPane.showInputDialog(null,"Ingrese el numero "));
         JOptionPane.showMessageDialog(null, n);//cuando finaliza el ciclo se muestra el mensaje.
@@ -60,7 +57,26 @@ public class DroolsTest {
         System.out.println(numeros[2]);
         System.out.println(numeros[3]);
         
-    	
+        /*
+        int aux=0;
+        int correcto=1;
+        for (int i=0;i<4;i++)
+        {
+        	if ( numeros[i] == numeros[i+1] ) 
+        	{
+        		aux++;
+        		if (aux!=0){
+        			correcto=0;
+                	System.out.println(correcto);
+                }
+        	}
+        }
+        */
+        
+		//if (correcto==0){
+        //	System.out.println("entra a ala condicion");
+        //	n = Integer.parseInt(JOptionPane.showInputDialog(null,"Ingrese el numero "));
+        //}
         //try {
             // load up the knowledge base
             //KnowledgeBase kbase = readKnowledgeBase();
