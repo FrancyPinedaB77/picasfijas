@@ -1,0 +1,89 @@
+//created on: Apr 5, 2017
+package co.edu.uniandes.picasFijas.punto1
+
+//list any import classes here.
+import java.util.Scanner;
+import java.util.Arrays;
+
+//declare any global variables here
+
+
+
+
+rule "Termina juego"
+	salience 5
+	when
+		t: Turno(turno == TipoTurno.FINAL)
+		contador: ContadorIntentos($id: intentosDisponibles, $i: intentos)
+	then
+		System.out.println("Juego finalizado");
+		System.out.println("Total intentos: "+ $i.size());
+end
+		
+rule "Primer intento"
+	salience 4
+	when
+		t : Turno(turno == TipoTurno.MAQUINA)
+		contador : ContadorIntentos($i: intentos, $id: intentosDisponibles)
+		feedback: Feedback($a: aciertos, $tf: tipoFeedback, $tf == TipoFeedback.NADA)
+		eval($i.size() == 1)
+	then
+		Integer[] numero = (Integer[])$i.get($i.size() -1);
+		System.out.println("Intento " + $i.size() + ": " + Arrays.toString(numero));
+		modify(t){setTurno (TipoTurno.HUMANO)};
+end
+
+rule "Turno de humano, la maquina tiene intentos disponibles"
+	when
+		t: Turno(turno == TipoTurno.HUMANO)
+		contador : ContadorIntentos($i: intentos, $id: intentosDisponibles)
+		generador: Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
+		feedback: Feedback($a: aciertos, $tf: tipoFeedback)
+		eval($i.size() <= $id)
+	then
+		Scanner scanner = new Scanner(System.in);
+		System.out.print("Cantidad aciertos: ");
+		int aciertosF = new Integer(scanner.nextInt()).intValue();
+		if(aciertosF < 1){
+			// regla nada
+			modify(feedback){setAciertos(aciertosF)}
+			modify(feedback){setTipoFeedback(TipoFeedback.NADA)};
+			modify(t){setTurno (TipoTurno.MAQUINA)};
+		}
+		else if(aciertosF > $ng){
+			// pedir feedback otra vez
+			System.out.println("Los aciertos no son validos");
+			update(t);
+		}
+		else{
+			// analizar feedback
+			scanner.nextLine();
+			System.out.print("Picas o fijas?: ");
+			String feedbackU = new String(scanner.nextLine());
+			if(feedbackU != null && feedbackU != "" && 
+				(feedbackU.equalsIgnoreCase("picas") || 
+					feedbackU.equalsIgnoreCase("fijas")) ) {
+				TipoFeedback tipo = TipoFeedback.valueOf(feedbackU.toUpperCase());
+				modify(feedback){setAciertos(aciertosF)}
+				modify(feedback){setTipoFeedback(tipo)};
+				modify(t){setTurno (TipoTurno.MAQUINA)};
+			}
+			else{
+				// pedir feedback otra vez
+				System.out.println("El feedback no es valido");
+				update(t);
+			}
+		}
+end		
+rule "Analizar si fueron todas fijas"
+	when		
+		t : Turno(turno == TipoTurno.MAQUINA)
+		generador: Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
+		contador : ContadorIntentos($i: intentos, $id: intentosDisponibles)
+		feedback: Feedback($a: aciertos, $tf: tipoFeedback)
+		eval ($a == $ng && $i.size() <= $id && $tf == TipoFeedback.FIJAS)
+	then
+		Integer[] numero = (Integer[])$i.get($i.size() -1);
+		System.out.println("El numero del usuario es: " + Arrays.toString(numero));
+		modify(t){setTurno (TipoTurno.FINAL)};
+end
