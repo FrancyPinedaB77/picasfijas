@@ -32,11 +32,13 @@ public final class Generador {
 	
 	public Integer[] generar(){
 		List<Integer> numeroGenerado = new ArrayList<>();
-		for(int i = 1; i <= numerosAGenerar; i++){
+		for(int i = 1; i <= numerosAGenerar; ){
 			int indice = new Random().nextInt(numerosDisponibles.size());
 			Integer numeroAleatorio = numerosDisponibles.get(indice);
-			if(!numeroGenerado.contains(numeroAleatorio))
+			if(!numeroGenerado.contains(numeroAleatorio)){
 				numeroGenerado.add(numeroAleatorio);
+				i++;
+			}
 		}
 		return numeroGenerado.toArray(new Integer[numeroGenerado.size()]);
 	}

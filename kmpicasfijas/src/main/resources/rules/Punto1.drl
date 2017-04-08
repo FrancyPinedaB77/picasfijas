@@ -8,82 +8,122 @@ import java.util.Arrays;
 //declare any global variables here
 
 
-
-
-rule "Termina juego"
+rule "Termina juego, de forma exitosa"
 	salience 5
 	when
 		t: Turno(turno == TipoTurno.FINAL)
-		contador: ContadorIntentos($id: intentosDisponibles, $i: intentos)
+		h: Historial($id: intentosDisponibles, $n: numerosGenerados, $r: respuestasHumano)
+		eval($n.size() <= $id)
 	then
 		System.out.println("Juego finalizado");
-		System.out.println("Total intentos: "+ $i.size());
+		System.out.println("Total intentos: "+ $n.size());
 end
-		
+
+rule "Termina juego, la maquina ya no tiene intentos disponibles"
+	when
+		t: Turno(turno == TipoTurno.MAQUINA)
+		h: Historial($id: intentosDisponibles, $n: numerosGenerados, $r: respuestasHumano)
+		eval($n.size() > $id)
+	then
+		System.out.println("Juego finalizado, no pude adivinar el numero en maximo " + ($n.size() - 1) + " intentos");
+		modify(t){setTurno (TipoTurno.FINAL)};
+end
+
+rule "Analizar si fueron todas fijas"
+	when		
+		t : Turno(turno == TipoTurno.MAQUINA)
+		g : Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
+		h: Historial($id: intentosDisponibles, $n: numerosGenerados, $r: respuestasHumano, $ultimaRespuesta: respuestasHumano.get(respuestasHumano.size() -1))
+		eval ($ultimaRespuesta.getAciertos().get(TipoRespuesta.FIJAS) == $ng)
+	then
+		Integer[] numero = (Integer[])$n.get($n.size() -1);
+		System.out.println("El numero del usuario es: " + Arrays.toString(numero) + " porque tiene " +  $ng + " fijas");
+		modify(t){setTurno (TipoTurno.FINAL)};
+end
+
 rule "Primer intento"
 	salience 4
 	when
 		t : Turno(turno == TipoTurno.MAQUINA)
-		contador : ContadorIntentos($i: intentos, $id: intentosDisponibles)
-		feedback: Feedback($a: aciertos, $tf: tipoFeedback, $tf == TipoFeedback.NADA)
-		eval($i.size() == 1)
+		h: Historial($id: intentosDisponibles, $n: numerosGenerados, $r: respuestasHumano)
+		eval($n.size() == 1 && $r.size() == 0)
 	then
-		Integer[] numero = (Integer[])$i.get($i.size() -1);
-		System.out.println("Intento " + $i.size() + ": " + Arrays.toString(numero));
+		Integer[] numero = (Integer[])$n.get($n.size() -1);
+		System.out.println("Intento " + $n.size() + ": " + Arrays.toString(numero));
 		modify(t){setTurno (TipoTurno.HUMANO)};
 end
+
+
 
 rule "Turno de humano, la maquina tiene intentos disponibles"
 	when
 		t: Turno(turno == TipoTurno.HUMANO)
-		contador : ContadorIntentos($i: intentos, $id: intentosDisponibles)
+		h: Historial($id: intentosDisponibles, $n: numerosGenerados, $r: respuestasHumano)
 		generador: Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
-		feedback: Feedback($a: aciertos, $tf: tipoFeedback)
-		eval($i.size() <= $id)
+		eval($n.size() <= $id)
 	then
+		// Cuantas Fijas
 		Scanner scanner = new Scanner(System.in);
-		System.out.print("Cantidad aciertos: ");
-		int aciertosF = new Integer(scanner.nextInt()).intValue();
-		if(aciertosF < 1){
-			// regla nada
-			modify(feedback){setAciertos(aciertosF)}
-			modify(feedback){setTipoFeedback(TipoFeedback.NADA)};
-			modify(t){setTurno (TipoTurno.MAQUINA)};
-		}
-		else if(aciertosF > $ng){
-			// pedir feedback otra vez
-			System.out.println("Los aciertos no son validos");
-			update(t);
-		}
-		else{
-			// analizar feedback
-			scanner.nextLine();
-			System.out.print("Picas o fijas?: ");
-			String feedbackU = new String(scanner.nextLine());
-			if(feedbackU != null && feedbackU != "" && 
-				(feedbackU.equalsIgnoreCase("picas") || 
-					feedbackU.equalsIgnoreCase("fijas")) ) {
-				TipoFeedback tipo = TipoFeedback.valueOf(feedbackU.toUpperCase());
-				modify(feedback){setAciertos(aciertosF)}
-				modify(feedback){setTipoFeedback(tipo)};
-				modify(t){setTurno (TipoTurno.MAQUINA)};
-			}
-			else{
+		System.out.print("Cantidad fijas: ");
+		int fijas = new Integer(scanner.nextInt()).intValue();
+		
+		// Cuantas Picas
+		System.out.print("Cantidad picas: ");
+		int picas = new Integer(scanner.nextInt()).intValue();
+		
+		// Validar numeros fijas o picas sea valido
+		if(picas + fijas <= $ng && picas + fijas >= 0 && picas >= 0 && fijas >= 0 ){
+			
+			// Si no es primera jugada
+			if(picas == 0 && fijas == 0 && $n.size() > 1){
 				// pedir feedback otra vez
-				System.out.println("El feedback no es valido");
+				System.out.println("Su respuesta no es valida, el numero de fijas y picas no pueden volver a ser cero, intente otra vez");
 				update(t);
 			}
+			else{
+				Respuesta ultimaRespuesta = new Respuesta();
+				ultimaRespuesta.agregarAciertos(TipoRespuesta.FIJAS, fijas);
+				ultimaRespuesta.agregarAciertos(TipoRespuesta.PICAS, picas);
+				modify(h){agregarRespuestaHumano (ultimaRespuesta)};
+				
+				// Cambiar turno maquina
+				modify(t){setTurno (TipoTurno.MAQUINA)};
+			}
+			
 		}
-end		
-rule "Analizar si fueron todas fijas"
-	when		
-		t : Turno(turno == TipoTurno.MAQUINA)
-		generador: Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
-		contador : ContadorIntentos($i: intentos, $id: intentosDisponibles)
-		feedback: Feedback($a: aciertos, $tf: tipoFeedback)
-		eval ($a == $ng && $i.size() <= $id && $tf == TipoFeedback.FIJAS)
-	then
-		Integer[] numero = (Integer[])$i.get($i.size() -1);
-		System.out.println("El numero del usuario es: " + Arrays.toString(numero));
-		modify(t){setTurno (TipoTurno.FINAL)};
+		else{
+			// pedir feedback otra vez
+			System.out.println("Su respuesta no es valida, el numero de fijas y picas no coincide con la cantidad de digitos del numero, intente otra vez");
+			update(t);
+		}
 end
+
+rule "Turno de maquina, no tuvo ningun acierto"
+	when
+		t: Turno(turno == TipoTurno.MAQUINA)
+		h: Historial($id: intentosDisponibles, $n: numerosGenerados, $r: respuestasHumano, $ultimaRespuesta: respuestasHumano.get(respuestasHumano.size() -1))
+		generador: Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
+		eval ($ultimaRespuesta.getAciertos().get(TipoRespuesta.FIJAS) == 0 && $ultimaRespuesta.getAciertos().get(TipoRespuesta.PICAS) == 0)
+	then
+		// eliminar numeros		
+		Integer[] numeroGenerado = (Integer[])$n.get($n.size() -1);
+		System.out.println("Como no se tuvo ningun acierto, se deben descartan los siguientes numeros: " + Arrays.toString(numeroGenerado));
+		for(int i = 0; i < numeroGenerado.length; i++){
+			modify(generador){ quitarNumeroLista(numeroGenerado[i])}
+		}
+		
+		// generar numero
+		Integer[] nuevoNumeroGenerado = generador.generar();
+		while(true){
+			if(h.agregarNumero(nuevoNumeroGenerado)){
+				break;
+			}
+		}
+		System.out.println("Intento " + $n.size() + ": " + Arrays.toString(nuevoNumeroGenerado));
+		
+		// turno humano
+		modify(t){setTurno (TipoTurno.HUMANO)};
+end
+
+
+// 9, 8, 7, 5 => 6, 0

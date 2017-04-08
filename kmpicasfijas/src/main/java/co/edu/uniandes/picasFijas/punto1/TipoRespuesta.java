@@ -1,6 +1,6 @@
 package co.edu.uniandes.picasFijas.punto1;
 
-public enum TipoFeedback {
+public enum TipoRespuesta {
 
 	FIJAS,
 	PICAS,

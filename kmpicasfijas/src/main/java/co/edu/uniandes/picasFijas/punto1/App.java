@@ -15,23 +15,26 @@ public class App {
 		KieServices kService = KieServices.Factory.get();
 		KieContainer kContainer = kService.getKieClasspathContainer();
 		KieSession kSession = kContainer.newKieSession("ksession-rules");
-		
 		agregarASesion(kSession);
 		kSession.fireAllRules();
 		kSession.dispose();
 	}
 
 	private static void agregarASesion(KieSession kSession) {
-		final Integer[] primerIntento = new Integer[]{1, 2, 3, 4};
-		final List<Integer[]> intentos = new ArrayList<>();
+		
+		Integer[] primerIntento = new Integer[]{1, 2, 3, 4};
+		List<Integer[]> intentos = new ArrayList<>();
 		intentos.add(primerIntento);
-		final Generador generador = Generador.getInstance(4);
-		final ContadorIntentos contador = new ContadorIntentos(10, intentos);
-		final Feedback feedback = new Feedback(4, TipoFeedback.NADA);
+		List<Respuesta> respuestasHumano = new ArrayList<>();
+		
+		Generador generador = Generador.getInstance(4);
+		Historial historial = new Historial(10, intentos, respuestasHumano);
 		final Turno turno = new Turno(TipoTurno.MAQUINA);
+		
+		
 		kSession.insert(generador);
-		kSession.insert(contador);
-		kSession.insert(feedback);
+		kSession.insert(historial);
 		kSession.insert(turno);
+		
 	}
 }
