@@ -51,21 +51,16 @@ rule "Analizar cuando son 4 picas "
 	//traer el ultimo numero
 		Integer[] numero = (Integer[])$n.get($n.size() -1);
 		Integer[] auxiliar= new Integer[$ng];
-		Integer[] variable= new Integer[$ng];
 		modify(g){setNumerosDisponibles(Arrays.asList(numero))}
 		while(true){
-		int[] numero = numero;
-		int orderToRotate = $ng-1;
-		for (int i = 0; i < orderToRotate; i++) {
-		    for (int j = unOrderedArr.length - 1; j > 0; j--) {
-		        int temp = unOrderedArr[j];
-		        unOrderedArr[j] = unOrderedArr[j - 1];
-		        unOrderedArr[j - 1] = temp;
-		    }
-		}
-		System.out.println( Arrays.toString(unOrderedArr));
-
-			if (auxiliar[0]!=8)//!=numero[0]&& auxiliar[1]!=numero[1]&& auxiliar[2]!=numero[2]&& auxiliar[3]!=numero[3])
+		//aca debe rotar el numero 
+		auxiliar[0]=numero[1];
+		auxiliar[1]=numero[2];
+		auxiliar[2]=numero[3];
+		auxiliar[3]=numero[0];
+		
+		   
+		if (auxiliar[0]!=numero[0]&& auxiliar[1]!=numero[1]&& auxiliar[2]!=numero[2]&& auxiliar[3]!=numero[3]);
 				{
 				if(h.agregarNumero(auxiliar)){
 					break;
