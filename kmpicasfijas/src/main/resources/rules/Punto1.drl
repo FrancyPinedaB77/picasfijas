@@ -58,8 +58,7 @@ rule "Analizar cuando son 4 picas "
 		auxiliar[1]=numero[2];
 		auxiliar[2]=numero[3];
 		auxiliar[3]=numero[0];
-		
-		   
+				   
 		if (auxiliar[0]!=numero[0]&& auxiliar[1]!=numero[1]&& auxiliar[2]!=numero[2]&& auxiliar[3]!=numero[3]);
 				{
 				if(h.agregarNumero(auxiliar)){
@@ -71,7 +70,59 @@ rule "Analizar cuando son 4 picas "
 		// turno humano
 		modify(t){setTurno (TipoTurno.HUMANO)};
 end		
-		
+
+rule "Analizar cuando  2 son picas y 2 son fijas "
+	when 
+		t : Turno(turno == TipoTurno.MAQUINA)
+		g : Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
+		h : Historial($id: intentosDisponibles, $n: numerosGenerados, $r: respuestasHumano, $ultimaRespuesta: respuestasHumano.get(respuestasHumano.size() -1))
+		eval(($ultimaRespuesta.getAciertos().get(TipoRespuesta.PICAS) == $ng-2) && ($ultimaRespuesta.getAciertos().get(TipoRespuesta.FIJAS) == $ng-2))
+	then
+	//traer el ultimo numero
+		Integer[] numero = (Integer[])$n.get($n.size() -1);
+		Integer[] auxiliar= new Integer[$ng];
+		modify(g){setNumerosDisponibles(Arrays.asList(numero))}
+		while(true){
+		//aca debe rotar el numero 
+		auxiliar[0]=numero[0];
+		auxiliar[1]=numero[1];
+		auxiliar[2]=numero[3];
+		auxiliar[3]=numero[2];
+				   
+		if (auxiliar[0]==numero[0]&& auxiliar[1]==numero[1]&& auxiliar[2]!=numero[2]&& auxiliar[3]!=numero[3]);
+				{
+				if(h.agregarNumero(auxiliar)){
+					break;
+				}
+				}
+		auxiliar[0]=numero[1];
+		auxiliar[1]=numero[0];
+		auxiliar[2]=numero[2];
+		auxiliar[3]=numero[3];
+				   
+		if (auxiliar[0]!=numero[0]&& auxiliar[1]!=numero[1]&& auxiliar[2]==numero[2]&& auxiliar[3]==numero[3]);
+				{
+				if(h.agregarNumero(auxiliar)){
+					break;
+				}
+				}
+		auxiliar[0]=numero[0];
+		auxiliar[1]=numero[3];
+		auxiliar[2]=numero[2];
+		auxiliar[3]=numero[1];
+				   
+		if (auxiliar[0]==numero[0]&& auxiliar[1]!=numero[1]&& auxiliar[2]==numero[2]&& auxiliar[3]!=numero[3]);
+				{
+				if(h.agregarNumero(auxiliar)){
+					break;
+				}
+				}
+			}
+					
+		System.out.println("Intento " + $n.size() + ": " + Arrays.toString(auxiliar));
+		// turno humano
+		modify(t){setTurno (TipoTurno.HUMANO)};
+end				
 
 rule "Primer intento"
 	salience 4
