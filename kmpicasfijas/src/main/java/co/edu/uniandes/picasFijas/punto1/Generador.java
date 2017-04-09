@@ -50,4 +50,8 @@ public final class Generador {
 	public List<Integer> getNumerosDisponibles(){
 		return numerosDisponibles;
 	}
+	
+	public void setNumerosDisponibles(List<Integer> numeros){
+		this.numerosDisponibles = numeros;
+	}
 }

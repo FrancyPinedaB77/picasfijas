@@ -1,6 +1,7 @@
 package co.edu.uniandes.picasFijas.punto1;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.kie.api.KieServices;
@@ -11,7 +12,8 @@ public class App {
 	private App(){ }
 
 	public static void main(String[] args) {
-				
+		
+			
 		KieServices kService = KieServices.Factory.get();
 		KieContainer kContainer = kService.getKieClasspathContainer();
 		KieSession kSession = kContainer.newKieSession("ksession-rules");
@@ -30,8 +32,7 @@ public class App {
 		Generador generador = Generador.getInstance(4);
 		Historial historial = new Historial(10, intentos, respuestasHumano);
 		final Turno turno = new Turno(TipoTurno.MAQUINA);
-		
-		
+	
 		kSession.insert(generador);
 		kSession.insert(historial);
 		kSession.insert(turno);
