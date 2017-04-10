@@ -13,6 +13,9 @@ public class App {
 
 	public static void main(String[] args) {
 				
+		// Instrucciones del juego
+		System.out.println("Instrucciones: \nPiense en un número de 4 dígitos\nSin repeticiones. Incluyendo el cero (0)");
+		
 		KieServices kService = KieServices.Factory.get();
 		KieContainer kContainer = kService.getKieClasspathContainer();
 		KieSession kSession = kContainer.newKieSession("ksession-rules");
