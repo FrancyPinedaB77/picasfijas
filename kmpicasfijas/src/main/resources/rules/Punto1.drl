@@ -70,7 +70,7 @@ rule "Analizar cuando son 4 picas "
 		// turno humano
 		modify(t){setTurno (TipoTurno.HUMANO)};
 end		
-
+////////////////////////////////////////////////////////////7
 rule "Analizar cuando  2 son picas y 2 son fijas "
 	when 
 		t : Turno(turno == TipoTurno.MAQUINA)
@@ -122,7 +122,8 @@ rule "Analizar cuando  2 son picas y 2 son fijas "
 		System.out.println("Intento " + $n.size() + ": " + Arrays.toString(auxiliar));
 		// turno humano
 		modify(t){setTurno (TipoTurno.HUMANO)};
-end				
+end	
+
 
 rule "Primer intento"
 	salience 4
@@ -137,8 +138,8 @@ rule "Primer intento"
 end
 
 
-
 rule "Turno de humano, la maquina tiene intentos disponibles"
+	salience 5
 	when
 		t: Turno(turno == TipoTurno.HUMANO)
 		h: Historial($id: intentosDisponibles, $n: numerosGenerados, $r: respuestasHumano)
@@ -149,30 +150,30 @@ rule "Turno de humano, la maquina tiene intentos disponibles"
 		Scanner scanner = new Scanner(System.in);
 		System.out.print("Cantidad fijas: ");
 		int fijas = new Integer(scanner.nextInt()).intValue();
-		
 		// Cuantas Picas
 		System.out.print("Cantidad picas: ");
 		int picas = new Integer(scanner.nextInt()).intValue();
-		
 		// Validar numeros fijas o picas sea valido
-		if(picas + fijas <= $ng && picas + fijas >= 0 && picas >= 0 && fijas >= 0 ){
-			
-			// Si no es primera jugada
-			if(picas == 0 && fijas == 0 && $n.size() > 1){
+		if(((picas + fijas <= $ng && picas + fijas >= 0 && picas >= 0 && fijas >= 0)||(fijas==3 && picas==1))){		
+			// Si no es primera jugada			
+			if(picas == 0 && fijas == 0 && $n.size() > 1 ){
 				// pedir feedback otra vez
-				System.out.println("Su respuesta no es valida, el numero de fijas y picas no pueden volver a ser cero, intente otra vez");
+				System.out.println("Su respuesta no es valida, el numero de fijas y picas no pueden volver a ser cero, intente otra vez o el numero ingresado no es valido si hay 3 fijas no puede haber 1 pica");
 				update(t);
 			}
+			else if (fijas==3 && picas==1){
+				System.out.println("Su respuesta no es valida si hay e fijas la otra no puede ser picas");
+		    	update(t);		
+			}	
 			else{
 				Respuesta ultimaRespuesta = new Respuesta();
 				ultimaRespuesta.agregarAciertos(TipoRespuesta.FIJAS, fijas);
 				ultimaRespuesta.agregarAciertos(TipoRespuesta.PICAS, picas);
 				modify(h){agregarRespuestaHumano (ultimaRespuesta)};
-				
-				// Cambiar turno maquina
+			    // Cambiar turno maquina
 				modify(t){setTurno (TipoTurno.MAQUINA)};
 			}
-			
+					
 		}
 		else{
 			// pedir feedback otra vez

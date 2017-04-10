@@ -45,18 +45,7 @@ public final class Generador {
 		return numeroGenerado.toArray(new Integer[numeroGenerado.size()]);
 	}
 	
-	/*
-	public Integer[] getRotar(Integer[] array){
-		 Integer[] auxiliar= new Integer[4];// PENDIENTE CAMBIAR EL NUMERO
-		 for (int j = auxiliar.length - 1; j > 0; j--) {
-		        int temp = auxiliar[j];
-		        auxiliar[j] = auxiliar[j - 1];
-		        auxiliar[j - 1] = temp;
-		        }
-		 return auxiliar;
-	}
-	*/
-	
+
 	public Integer[] getauxiliar(){ //ponerlo como metodo
 		Integer[] auxiliar= new Integer[4];// PENDIENTE CAMBIAR EL NUMERO
 		 for (int j = auxiliar.length - 1; j > 0; j--) {
