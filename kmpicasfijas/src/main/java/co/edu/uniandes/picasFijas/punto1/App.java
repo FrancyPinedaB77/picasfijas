@@ -12,8 +12,7 @@ public class App {
 	private App(){ }
 
 	public static void main(String[] args) {
-		
-			
+				
 		KieServices kService = KieServices.Factory.get();
 		KieContainer kContainer = kService.getKieClasspathContainer();
 		KieSession kSession = kContainer.newKieSession("ksession-rules");
