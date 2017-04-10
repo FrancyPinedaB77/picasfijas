@@ -1,3 +1,12 @@
+/**
+* Generador crea números de 4-dígitos compuestos
+* con los dígitos permitidos.
+*
+* @author  Grupo X
+* @version 1.0
+* @since   2017-04-01 
+*/
+
 package co.edu.uniandes.picasFijas.punto1;
 
 import java.util.ArrayList;

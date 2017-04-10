@@ -1,3 +1,11 @@
+/**
+* Historial lleva cuenta de las respuestas del jugador.
+* En este contexto el jugador es el humano.
+*
+* @author  Grupo X
+* @version 1.0
+* @since   2017-04-01 
+*/
 package co.edu.uniandes.picasFijas.punto1;
 
 import java.util.ArrayList;
