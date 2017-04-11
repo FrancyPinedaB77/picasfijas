@@ -563,7 +563,7 @@ rule "Analizar si fueron todas fijas" //PARECE QUE NO FUNCIONA
 		System.out.println("El numero del usuario es: " + Arrays.toString(numero) + " porque tiene " +  $ng + " fijas");
 		modify(t){setTurno (TipoTurno.FINAL)};
 end
-
+////////////////// Regla 4P 0F
 rule "Analizar cuando son 4 picas"
 	when 
 		t : Turno(turno == TipoTurno.MAQUINA)
@@ -603,7 +603,7 @@ rule "Analizar cuando son 4 picas"
 		// turno humano
 		modify(t){setTurno (TipoTurno.HUMANO)};
 end		
-
+////////////////// Regla 3P 1F
 rule "Analizar cuando son 3 son picas y 1 fija"
 	when 
 		t : Turno(turno == TipoTurno.MAQUINA)
@@ -661,8 +661,8 @@ rule "Analizar cuando son 3 son picas y 1 fija"
 		// turno humano
 		modify(t){setTurno (TipoTurno.HUMANO)};
 end		
-////////////////////////////////////////////////////////////
 
+////////////////// Regla 2P 2F
 rule "Analizar cuando 2 son picas y 2 son fijas"
 	when 
 		t : Turno(turno == TipoTurno.MAQUINA)
@@ -766,7 +766,7 @@ rule "Turno de humano, la maquina tiene intentos disponibles"
 			update(t);
 		}
 end
-
+////////////////// Regla 0P 0F
 rule "Turno de maquina, no tuvo ningun acierto 0P 0F "
 	when
 		t: Turno(turno == TipoTurno.MAQUINA)
@@ -794,7 +794,7 @@ rule "Turno de maquina, no tuvo ningun acierto 0P 0F "
 		// turno humano
 		modify(t){setTurno (TipoTurno.HUMANO)};
 end
-
+////////////////// Regla 1P 1F
 rule "Analiza cuando 1P 1F"
 	when
 		t: Turno(turno == TipoTurno.MAQUINA)
@@ -870,7 +870,7 @@ rule "Analiza cuando 1P 1F"
 		// turno humano
 		modify(t){setTurno (TipoTurno.HUMANO)};
 end 
-
+////////////////// Regla 1P 0F
 rule "Analiza cuando 1P 0F" //Francy
 	
 	when
@@ -895,7 +895,7 @@ rule "Analiza cuando 1P 0F" //Francy
 		if(p == 2){
 			System.out.println("Al encontrar una pica, se busca verificar si las dos primeras cifras corresponden a una parte de la solucion al cambiar sus posiciones");			
 			it.add(un.get(1));
-			it.add(un.get(0));
+			//it.add(un.get(0));
 			for(Integer i : (List<Integer>)$nd){
 				if(!un.contains(i) && !it.contains(i) && it.size() < 4){
 					it.add(i);
@@ -912,7 +912,7 @@ rule "Analiza cuando 1P 0F" //Francy
 		// turno humano
 		modify(t){setTurno (TipoTurno.HUMANO)};
 end 
-
+////////////////// Regla 1P 2F
 rule "Analiza cuando 1P 2F"
 	when
 		t: Turno(turno == TipoTurno.MAQUINA)
@@ -932,9 +932,9 @@ rule "Analiza cuando 1P 2F"
 		// Primer intento, toma tres primeros
 		if($n.size() == 1){
 			System.out.println("Al encontrar 2 fijas y una 1pica, se busca mantienen 2 fijas y se cambian de posicion otro numero");			
-			it.add(un.get(0));
-			it.add(un.get(1));
+			it.add(un.get(2));
 			it.add(un.get(3));
+			it.add(un.get(0));
 			for(Integer i : (List<Integer>)$nd){
 				if(!un.contains(i) && !it.contains(i) && it.size() < 4){
 					it.add(i);
@@ -1007,7 +1007,7 @@ rule "Analiza cuando 1P 2F"
 		// turno humano
 		modify(t){setTurno (TipoTurno.HUMANO)};
 end
-
+////////////////// Regla 0P 2F
 rule "Analiza cuando 0P 2F"
 	when
 		t: Turno(turno == TipoTurno.MAQUINA)
