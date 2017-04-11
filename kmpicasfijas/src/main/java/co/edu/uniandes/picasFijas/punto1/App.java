@@ -43,6 +43,18 @@ public class App {
 		Historial historial = new Historial(10, intentos, respuestasHumano);
 		final Turno turno = new Turno(TipoTurno.MAQUINA);
 	
+//		historial.agregarNumero(new Integer[]{1,2,3,4});
+//		historial.agregarNumero(new Integer[]{1,2,5,6});
+//		Respuesta r1 = new Respuesta();
+//		r1.agregarAciertos(TipoRespuesta.FIJAS, 0);
+//		r1.agregarAciertos(TipoRespuesta.PICAS, 1);
+//		Respuesta r2 = new Respuesta();
+//		r2.agregarAciertos(TipoRespuesta.FIJAS, 0);
+//		r2.agregarAciertos(TipoRespuesta.PICAS, 1);
+//		
+//		historial.agregarRespuestaHumano(r1);
+//		historial.agregarRespuestaHumano(r2);
+		
 		kSession.insert(generador);
 		kSession.insert(historial);
 		kSession.insert(turno);
