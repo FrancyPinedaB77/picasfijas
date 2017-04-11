@@ -8,7 +8,7 @@ import java.util.Arrays;
 //declare any global variables here
 
 
-rule "Termina juego, de forma exitosa"
+rule "Termina juego de forma exitosa"
 	salience 5
 	when
 		t: Turno(turno == TipoTurno.FINAL)
@@ -41,7 +41,7 @@ rule "Analizar si fueron todas fijas"
 		modify(t){setTurno (TipoTurno.FINAL)};
 end
 
-rule "Analizar cuando son 4 picas "
+rule "Analizar cuando son 4 picas"
 	when 
 		t : Turno(turno == TipoTurno.MAQUINA)
 		g : Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
@@ -72,7 +72,7 @@ rule "Analizar cuando son 4 picas "
 end		
 
 
-rule "Analizar cuando son 3 son picas y 1 fija "
+rule "Analizar cuando son 3 son picas y 1 fija"
 	when 
 		t : Turno(turno == TipoTurno.MAQUINA)
 		g : Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
@@ -131,8 +131,9 @@ rule "Analizar cuando son 3 son picas y 1 fija "
 		// turno humano
 		modify(t){setTurno (TipoTurno.HUMANO)};
 end		
-////////////////////////////////////////////////////////////7
-rule "Analizar cuando  2 son picas y 2 son fijas "
+////////////////////////////////////////////////////////////
+
+rule "Analizar cuando 2 son picas y 2 son fijas"
 	when 
 		t : Turno(turno == TipoTurno.MAQUINA)
 		g : Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
