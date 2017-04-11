@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 * Generador crea numeros de 4-digitos compuestos
 * con los digitos permitidos o disponibles.
 *
-* @author  Francy Pineda, Harry Wond, David Mera
+* @author  Francy Pineda, Harry Wong, David Mera
 * @version 1.0
 * @since   2017-04-01 
 */
