@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.ArrayList;
 //declare any global variables here
 
-rule "Turno de la maquina, la respuesta del usuario fue 0F 1F"
+rule "Turno de la maquina, la respuesta del usuario fue 0P 1F"
 	when
 		t: Turno(turno == TipoTurno.MAQUINA)
 		h: Historial(
