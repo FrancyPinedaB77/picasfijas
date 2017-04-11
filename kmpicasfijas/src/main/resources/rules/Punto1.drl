@@ -819,9 +819,9 @@ rule "Analiza cuando 1P 1F"
 		//aca debe rotar el numero 
 		auxiliar[0]=numero[0];//lo mantiene fijo
 		auxiliar[1]=numero[2];//no rota, puede ser la pica
-		auxiliar[2]=8; //PENDIENTE ASIGNAR VALORES DEL LA LISTA DE LOS NUMEROS DISPONIBLES
-		auxiliar[3]=9;
-		System.out.println(	auxiliar);   
+		auxiliar[2]=generador.getNumerosDisponibles().get(penulp); //PENDIENTE ASIGNAR VALORES DEL LA LISTA DE LOS NUMEROS DISPONIBLES
+		auxiliar[3]=generador.getNumerosDisponibles().get(ultimap);
+  
 		if (auxiliar[0] != 0 && h.agregarNumero(auxiliar)){
 			break;
 		}
