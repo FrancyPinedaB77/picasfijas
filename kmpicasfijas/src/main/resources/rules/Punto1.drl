@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.ArrayList;
 //declare any global variables here
 
-rule "Turno de la maquina, la respuesta del usuario fue 0F 1F"
+rule "Turno de la maquina, la respuesta del usuario fue 0P 1F"
 	when
 		t: Turno(turno == TipoTurno.MAQUINA)
 		h: Historial(
@@ -517,14 +517,14 @@ rule "Turno de la maquina, el usuario contesta 3F y 0P"
 		}
 end
 
-rule "Termina juego de forma exitosa"
+rule "Termina juego de forma exitosa 4F 0P"
 	salience 5
 	when
 		t: Turno(turno == TipoTurno.FINAL)
 		h: Historial($id: intentosDisponibles, $n: numerosGenerados, $r: respuestasHumano)
 		eval($n.size() <= $id)
 	then
-		System.out.println("Juego finalizado");
+		System.out.println("Juego finalizado EXITOSAMENTE");
 		System.out.println("Total intentos: "+ $n.size());
 end
 
@@ -538,7 +538,7 @@ rule "Termina juego, la maquina ya no tiene intentos disponibles"
 		modify(t){setTurno (TipoTurno.FINAL)};
 end
 
-rule "Analizar si fueron todas fijas"
+rule "Analizar si fueron todas fijas" //PARECE QUE NO FUNCIONA
 	when		
 		t : Turno(turno == TipoTurno.MAQUINA)
 		g : Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
@@ -753,7 +753,7 @@ rule "Turno de humano, la maquina tiene intentos disponibles"
 		}
 end
 
-rule "Turno de maquina, no tuvo ningun acierto"
+rule "Turno de maquina, no tuvo ningun acierto 0P 0F "
 	when
 		t: Turno(turno == TipoTurno.MAQUINA)
 		h: Historial($id: intentosDisponibles, $n: numerosGenerados, $r: respuestasHumano, $ultimaRespuesta: respuestasHumano.get(respuestasHumano.size() -1))
@@ -779,4 +779,214 @@ rule "Turno de maquina, no tuvo ningun acierto"
 		
 		// turno humano
 		modify(t){setTurno (TipoTurno.HUMANO)};
+end
+
+rule "Analiza cuando 1P 1F"
+	when
+		t: Turno(turno == TipoTurno.MAQUINA)
+		h: Historial(
+			$id: intentosDisponibles, 
+			$n: numerosGenerados, 
+			$r: respuestasHumano,
+			$ultimaRespuesta: respuestasHumano.get(respuestasHumano.size() -1))
+		generador: Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
+		eval(($ultimaRespuesta.getAciertos().get(TipoRespuesta.FIJAS) == 1) && ($ultimaRespuesta.getAciertos().get(TipoRespuesta.PICAS) == 1))
+	then
+		Integer[] numero = (Integer[])$n.get($n.size() -1);
+		Integer[] auxiliar= new Integer[$ng];
+		List disponibles = new ArrayList();
+		disponibles=generador.getNumerosDisponibles();
+		int tamaño_array=disponibles.size();
+		int ultimap = tamaño_array-1;
+		int penulp  = tamaño_array-2;
+		
+		while(true){
+		
+		//aca debe rotar el numero 
+		auxiliar[0]=numero[0];//lo mantiene fijo
+		auxiliar[1]=numero[2];//no rota, puede ser la pica
+		auxiliar[2]=8; //PENDIENTE ASIGNAR VALORES DEL LA LISTA DE LOS NUMEROS DISPONIBLES
+		auxiliar[3]=9;
+		System.out.println(	auxiliar);   
+		if (auxiliar[0] != 0 && h.agregarNumero(auxiliar)){
+			break;
+		}
+		}
+		System.out.println("Intento " + $n.size() + ": " + Arrays.toString(auxiliar));
+		// turno humano
+		modify(t){setTurno (TipoTurno.HUMANO)};
+end 
+
+rule "Analiza cuando 1P 0F" //Francy
+	
+	when
+		t: Turno(turno == TipoTurno.MAQUINA)
+		h: Historial(
+			$id: intentosDisponibles, 
+			$n: numerosGenerados, 
+			$r: respuestasHumano,
+			$ultimaRespuesta: respuestasHumano.get(respuestasHumano.size() -1))
+		generador: Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
+		eval(($ultimaRespuesta.getAciertos().get(TipoRespuesta.PICAS) == 1) && ($ultimaRespuesta.getAciertos().get(TipoRespuesta.FIJAS) == 0))
+	then
+		Integer[] ultimoNum = (Integer[]) $n.get($n.size() - 1);
+		List<Integer> un = Arrays.asList(ultimoNum);
+		Integer[] intento = new Integer[$ng];
+		List<Integer> similares = new ArrayList<>();
+		List<Integer> it = new ArrayList<>();
+
+		
+		// Primer intento, toma dos primeros
+		int p=2;
+		if(p == 2){
+			System.out.println("Al encontrar una pica, se busca verificar si las dos primeras cifras corresponden a una parte de la solucion al cambiar sus posiciones");			
+			it.add(un.get(1));
+			it.add(un.get(0));
+			for(Integer i : (List<Integer>)$nd){
+				if(!un.contains(i) && !it.contains(i) && it.size() < 4){
+					it.add(i);
+				}
+				else if(it.size() == 4){
+					break;
+				}
+			}
+			intento = it.toArray(new Integer[it.size()]);
+			//h.agregarNumero(intento);
+		}
+		h.agregarNumero(intento);
+		System.out.println("Intento " + $n.size() + ": " + Arrays.toString(intento));			
+		// turno humano
+		modify(t){setTurno (TipoTurno.HUMANO)};
+end 
+
+rule "Analiza cuando 1P 2F"
+	when
+		t: Turno(turno == TipoTurno.MAQUINA)
+		h: Historial(
+			$id: intentosDisponibles, 
+			$n: numerosGenerados, 
+			$r: respuestasHumano,
+			$ultimaRespuesta: respuestasHumano.get(respuestasHumano.size() -1))
+		generador: Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
+		eval(($ultimaRespuesta.getAciertos().get(TipoRespuesta.FIJAS) == 2) && ($ultimaRespuesta.getAciertos().get(TipoRespuesta.PICAS) == 1))
+	then
+		Integer[] ultimoNum = (Integer[]) $n.get($n.size() - 1);
+		List<Integer> un = Arrays.asList(ultimoNum);
+		Integer[] intento = new Integer[$ng];
+		List<Integer> similares = new ArrayList<>();
+		List<Integer> it = new ArrayList<>();
+		// Primer intento, toma tres primeros
+		if($n.size() == 1){
+			System.out.println("Al encontrar 2 fijas y una 1pica, se busca mantienen 2 fijas y se cambian de posicion otro numero");			
+			it.add(un.get(0));
+			it.add(un.get(1));
+			it.add(un.get(3));
+			for(Integer i : (List<Integer>)$nd){
+				if(!un.contains(i) && !it.contains(i) && it.size() < 4){
+					it.add(i);
+				}
+				else if(it.size() == 4){
+					break;
+				}
+			}
+			intento = it.toArray(new Integer[it.size()]);
+		}
+		// Mas intentos
+		else{
+			Integer[] penultNum = (Integer[])$n.get($n.size() - 2);
+			Respuesta penultRes = (Respuesta)$r.get($r.size()-2);
+			Integer penultPicas = penultRes.getAciertos().get(TipoRespuesta.PICAS);
+			Integer ultimPicas = $ultimaRespuesta.getAciertos().get(TipoRespuesta.PICAS);
+			Integer penultFijas = penultRes.getAciertos().get(TipoRespuesta.FIJAS);
+			Integer ultimFijas = $ultimaRespuesta.getAciertos().get(TipoRespuesta.FIJAS);
+			// Valida si respuesta anterior fue igual, toma similares descarta los demas, agrega nuevo
+			if(penultPicas == ultimPicas && penultFijas == ultimFijas){
+				System.out.println("Los ultimos dos intentos son muy similares, por tanto se descartaran las cifras no similares");
+				List<Integer> p = Arrays.asList(penultNum);
+				List<Integer> u = Arrays.asList(ultimoNum);
+				for(Integer i : u){
+					if(!p.contains(i)){
+						// eliminar cada elemento no comun
+						// informar usuario
+						System.out.println("Se descarta el numero " + i + " debido a que no contribuyo a aumentar el numero de fijas");
+						generador.quitarNumeroLista(i);
+					}
+					else if(!similares.contains(i)){	// agrega los similares
+						similares.add(i);
+					}		
+				}
+				for(Integer i : p){
+					if(!u.contains(i)){
+						// eliminar cada elemento no comun
+						// informar usuario
+						System.out.println("Se descarta el numero " + i + " debido a que no contribuyo a aumentar el numero de fijas");
+						generador.quitarNumeroLista(i);
+					}
+					else if(!similares.contains(i)){	// agrega los similares
+						similares.add(i);
+					}
+				}
+				intento = similares.toArray(new Integer[similares.size()]);
+			}
+			// Si la respuesta anterior fue Mayor, (2P 2F, 3P 1F) ya existen reglas de ese flujo
+			
+			// Si la respuesta anterior fue peor, toma tres primeros y agrega un numero nuevos
+			else if(penultPicas < ultimPicas || penultFijas < ultimFijas){
+				System.out.println("Al encontrar 2 picas y una fija en el ultimo intento, y que ha mejorado la respuesta, se busca verificar si las tres primeras cifras corresponden a una parte de la solucion");
+				it.add(un.get(0));
+				it.add(un.get(1));
+				it.add(un.get(2));
+				for(Integer i : (List<Integer>)$nd){
+					if(!un.contains(i) && !it.contains(i) && it.size() < 4){
+						it.add(i);
+					}
+					else if(it.size() == 4){
+						break;
+					}
+				}
+			intento = it.toArray(new Integer[it.size()]);
+			}
+		}
+		
+		h.agregarNumero(intento);
+		System.out.println("Intento " + $n.size() + ": " + Arrays.toString(intento));			
+		// turno humano
+		modify(t){setTurno (TipoTurno.HUMANO)};
+end
+
+rule "Analiza cuando 0P 2F"
+	when
+		t: Turno(turno == TipoTurno.MAQUINA)
+		h: Historial(
+			$id: intentosDisponibles, 
+			$n: numerosGenerados, 
+			$r: respuestasHumano,
+			$ultimaRespuesta: respuestasHumano.get(respuestasHumano.size() -1))
+		generador: Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
+		eval(($ultimaRespuesta.getAciertos().get(TipoRespuesta.FIJAS) == 2) && ($ultimaRespuesta.getAciertos().get(TipoRespuesta.PICAS) == 0))
+	then
+		// Primer intento
+		Integer[] ultimoNum = (Integer[]) $n.get($n.size() - 1);
+		List<Integer> un = Arrays.asList(ultimoNum);
+		Integer[] intento = new Integer[$ng];
+		List<Integer> similares = new ArrayList<>();
+		if($n.size() == 1){
+			System.out.println("Al encontrar 2 fijas mantengo las primeras y cambio las restantesas");
+			List<Integer> it = new ArrayList<>();
+			it.add(un.get(0));
+			it.add(un.get(1));
+			for(Integer i : (List<Integer>)$nd){
+				if(!un.contains(i) && !it.contains(i) && it.size() < 4){
+					it.add(i);
+				}
+				else if(it.size() == 4){
+					break;
+				}
+			}
+			intento = it.toArray(new Integer[it.size()]);
+		}
+		h.agregarNumero(intento);
+		System.out.println("Intento " + $n.size() + ": " + Arrays.toString(intento));			
+		// turno humano
+		modify(t){setTurno (TipoTurno.HUMANO)};	
 end
