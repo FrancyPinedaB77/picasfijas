@@ -2,7 +2,6 @@ package co.edu.uniandes.picasFijas.punto1;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -20,7 +19,7 @@ public class App {
 				
 		// Instrucciones del juego
 		System.out.println("Instrucciones: \nPiense en un numero de 4 digitos\nSin repeticiones. Incluyendo el cero (0)");
-		
+				
 		KieServices kService = KieServices.Factory.get();
 		KieContainer kContainer = kService.getKieClasspathContainer();
 		KieSession kSession = kContainer.newKieSession("ksession-rules");
