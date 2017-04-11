@@ -5,45 +5,65 @@ package co.edu.uniandes.picasFijas.punto1
 import java.util.Scanner;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 //declare any global variables here
 
 rule "En las dos ultimas jugadas, el usuario responde la misma cantidad de aciertos y los dos ultimos numeros tienen digitos similares"
 	when
 		t: Turno(turno == TipoTurno.MAQUINA)
-		h: Historial($id: intentosDisponibles,  $n: numerosGenerados, $r: respuestasHumano,
-		 $ur: respuestasHumano.get(respuestasHumano.size() -1),
-		 $pu: respuestasHumano.get(respuestasHumano.size() -2),
-		 $ui: Arrays.asList(numerosGenerados.get(numerosGenerados.size() -1)),
-		 $pi: Arrays.asList(numerosGenerados.get(numerosGenerados.size() -2)))
+		h: Historial(
+			$id: intentosDisponibles,
+			numerosGenerados.size() >=2, 
+			$n: numerosGenerados, 
+			$r: respuestasHumano, 
+			$ur: respuestasHumano.get(respuestasHumano.size() -1), 
+			$pu: respuestasHumano.get(respuestasHumano.size() -2)
+			)
 		generador: Generador($nd: numerosDisponibles, $ng: numerosAGenerar)
 		eval(
-			($ur.getAciertos().get(TipoRespuesta.FIJAS) == $pu.getAciertos().get(TipoRespuesta.FIJAS) ||
-			$ur.getAciertos().get(TipoRespuesta.PICAS) == $pu.getAciertos().get(TipoRespuesta.PICAS)) &&
-			(!Collections.disjoint($ui, $pi))) // tienen al menos un elemento en comun
+			$ur.getAciertos().get(TipoRespuesta.FIJAS) == $pu.getAciertos().get(TipoRespuesta.FIJAS) 
+			||
+			$ur.getAciertos().get(TipoRespuesta.PICAS) == $pu.getAciertos().get(TipoRespuesta.PICAS)
+			)
 	then
-		// Obtener elementos que no sean comunes entre si, conservar comunes
-		for(Integer i : $ui){
-			if(!$pi.contains(i)){
-				// eliminar cada elemento no comun
-				// informar usuario
-				System.out.println("Se descarta el numero " + i + " debido a que no contribuyo a aumentar el numero de fijas");
-				generador.quitarNumeroLista(i);
+		// No fue posible mover esto a sentencia drools then
+		List<Integer> ultimoIntento = Arrays.asList(
+			(Integer[])$n.get($n.size() -1));
+		List<Integer> penultimoIntento = Arrays.asList(
+			(Integer[])$n.get($n.size() -2));
+		if(!Collections.disjoint(ultimoIntento, penultimoIntento)){
+			
+			// Obtener elementos que no sean comunes entre si, conservar comunes
+			for(Integer i : ultimoIntento){
+				if(!penultimoIntento.contains(i)){
+					// eliminar cada elemento no comun
+					// informar usuario
+					System.out.println("Se descarta el numero " + i + " debido a que no contribuyo a aumentar el numero de fijas");
+					generador.quitarNumeroLista(i);
+				}
 			}
-		}
-		
-		// generar numero
-		Integer[] nuevoNumeroGenerado = generador.generar();
-		while(true){			
-			if(nuevoNumeroGenerado[0] != 0 && h.agregarNumero(nuevoNumeroGenerado)){
-				break;
+			for(Integer i : penultimoIntento){
+				if(!ultimoIntento.contains(i)){
+					// eliminar cada elemento no comun
+					// informar usuario
+					System.out.println("Se descarta el numero " + i + " debido a que no contribuyo a aumentar el numero de fijas");
+					generador.quitarNumeroLista(i);
+				}
 			}
-			nuevoNumeroGenerado = generador.generar();			
+			
+			// generar numero
+			Integer[] nuevoNumeroGenerado = generador.generar();
+			while(true){			
+				if(nuevoNumeroGenerado[0] != 0 && h.agregarNumero(nuevoNumeroGenerado)){
+					break;
+				}
+				nuevoNumeroGenerado = generador.generar();			
+			}
+			System.out.println("Intento " + $n.size() + ": " + Arrays.toString(nuevoNumeroGenerado));
+			
+			// turno humano
+			modify(t){setTurno (TipoTurno.HUMANO)};
 		}
-		System.out.println("Intento " + $n.size() + ": " + Arrays.toString(nuevoNumeroGenerado));
-		
-		// turno humano
-		modify(t){setTurno (TipoTurno.HUMANO)};
-		
 end
 
 rule "Termina juego de forma exitosa"
