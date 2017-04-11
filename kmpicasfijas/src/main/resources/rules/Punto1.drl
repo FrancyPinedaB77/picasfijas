@@ -302,6 +302,7 @@ rule "Turno de la maquina, el usuario contesta 3P y 0F"
 		
 		List<Integer> it = new ArrayList<>();
 		if($n.size() < 2){
+			System.out.println("primer turno");
 			Integer posicionFinal = ultimoNum[3] == 9 ? 0 : ultimoNum[3] + 1;
 			while(true){
 				if(posicionFinal != ultimoNum[0] && posicionFinal !=  ultimoNum[1] && posicionFinal != ultimoNum[2]){
@@ -311,7 +312,7 @@ rule "Turno de la maquina, el usuario contesta 3P y 0F"
 					posicionFinal = posicionFinal == 9 ? 0 : posicionFinal + 1;
 				}
 			}
-					
+			intento = new Integer[]{ultimoNum[0], ultimoNum[1], ultimoNum[2], posicionFinal};		
 			h.agregarNumero(intento);
 			System.out.println("Se obtuvieron 3 picas, se intenta validar si los tres primerons son picas");
 			System.out.println("Intento " + $n.size() + ": " + Arrays.toString(intento));
@@ -321,6 +322,7 @@ rule "Turno de la maquina, el usuario contesta 3P y 0F"
 		}
 		// Si no es primer intento
 		else{
+			System.out.println("despues primer turno");
 			Integer[] penultNum = (Integer[]) $n.get($n.size() - 2);
 			Respuesta penultRes = (Respuesta) $r.get($r.size() -2);
 			Integer fijasUltimTurno = (Integer)$ultimaRespuesta.getAciertos().get(TipoRespuesta.FIJAS);
@@ -328,6 +330,7 @@ rule "Turno de la maquina, el usuario contesta 3P y 0F"
 			Integer picasPenultimoTurno = penultRes.getAciertos().get(TipoRespuesta.PICAS);
 			// Si antes habian mas fijas, tomar numero anterior para convertirlo en caso de 3P y 1F
 			if(fijasPenultTurno > fijasUltimTurno){
+				System.out.println("mas picas en el penultimo");
 				Integer[] auxiliar = new Integer[]{penultNum[2], penultNum[0], penultNum[1], penultNum[3]};
 				while(true){
 					if(auxiliar[0] != 0 && h.agregarNumero(auxiliar)){
@@ -340,15 +343,11 @@ rule "Turno de la maquina, el usuario contesta 3P y 0F"
 				}				
 			}
 			
-			// Si el numero de fijas es igual, descartar los no comunes
-			
-			
-			
-			
+			// Si el numero de fijas es igual, descartar los no comunes			
 			else if(fijasPenultTurno == fijasUltimTurno){
-				
+				System.out.println("igual numero de fijas entre penultimo y utlimo");
 				if(picasPenultimoTurno == 0){
-					
+					System.out.println("fijas = 0");
 					it.add(un.get(0));
 					it.add(un.get(1));
 					for(Integer i : (List<Integer>)$nd){
@@ -360,40 +359,55 @@ rule "Turno de la maquina, el usuario contesta 3P y 0F"
 						}
 					}
 					intento = it.toArray(new Integer[it.size()]);
-				}
-				else{
-					
-					System.out.println("Los ultimos dos intentos son muy similares, por tanto se descartaran las cifras no similares");
-					List<Integer> p = Arrays.asList(penultNum);
-					List<Integer> u = Arrays.asList(ultimoNum);
-					for(Integer i : u){
-						if(!p.contains(i)){
-							// eliminar cada elemento no comun
-							// informar usuario
-							System.out.println("Se descarta el numero " + i + " debido a que no contribuyo a aumentar el numero de fijas");
-							generador.quitarNumeroLista(i);
-						}
-						else if(!similares.contains(i)){	// agrega los similares
-							similares.add(i);
-						}		
-					}
-					for(Integer i : p){
-						if(!u.contains(i)){
-							// eliminar cada elemento no comun
-							// informar usuario
-							System.out.println("Se descarta el numero " + i + " debido a que no contribuyo a aumentar el numero de fijas");
-							generador.quitarNumeroLista(i);
-						}
-						else if(!similares.contains(i)){	// agrega los similares
-							similares.add(i);
-						}
-					}
-					Integer[] nuevoIntento = new Integer[similares.size()];
-					nuevoIntento = similares.toArray(nuevoIntento);
-					h.agregarNumero(nuevoIntento);
-					System.out.println("Intento " + $n.size() + ": " + Arrays.toString(nuevoIntento));
+					h.agregarNumero(intento);
+					System.out.println("Intento " + $n.size() + ": " + Arrays.toString(intento));
 					// turno humano
 					modify(t){setTurno (TipoTurno.HUMANO)};
+				}
+				else{
+					System.out.println("fijas > 0");
+					if($n.size() > 6){
+						System.out.println("Los ultimos dos intentos son muy similares, por tanto se descartaran las cifras no similares");					
+						List<Integer> p = Arrays.asList(penultNum);
+						List<Integer> u = Arrays.asList(ultimoNum);
+						for(Integer i : u){
+							if(!p.contains(i)){
+								// eliminar cada elemento no comun
+								// informar usuario
+								System.out.println("Se descarta el numero " + i + " debido a que no contribuyo a aumentar el numero de fijas");
+								generador.quitarNumeroLista(i);
+							}
+							else if(!similares.contains(i)){	// agrega los similares
+								similares.add(i);
+							}		
+						}
+						for(Integer i : p){
+							if(!u.contains(i)){
+								// eliminar cada elemento no comun
+								// informar usuario
+								System.out.println("Se descarta el numero " + i + " debido a que no contribuyo a aumentar el numero de fijas");
+								generador.quitarNumeroLista(i);
+							}
+							else if(!similares.contains(i)){	// agrega los similares
+								similares.add(i);
+							}
+						}
+						Integer[] nuevoIntento = new Integer[similares.size()];
+						nuevoIntento = similares.toArray(nuevoIntento);
+						h.agregarNumero(nuevoIntento);
+						System.out.println("Intento " + $n.size() + ": " + Arrays.toString(nuevoIntento));
+						// turno humano
+						modify(t){setTurno (TipoTurno.HUMANO)};	
+					}
+					else{
+						System.out.println("Se combinan los ultimos dos intentos");
+						Integer[] nuevoIntento = new Integer[]{penultNum[0], penultNum[1], penultNum[2] ,ultimoNum[3]};
+						nuevoIntento = similares.toArray(nuevoIntento);
+						h.agregarNumero(nuevoIntento);
+						System.out.println("Intento " + $n.size() + ": " + Arrays.toString(nuevoIntento));
+						// turno humano
+						modify(t){setTurno (TipoTurno.HUMANO)};
+					}
 				}
 			}
 		}
