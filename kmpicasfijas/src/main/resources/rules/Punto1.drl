@@ -822,11 +822,11 @@ rule "Analiza cuando 1P 1F"
 		
 		//aca debe rotar el numero 
 		
-		if (numero[0]!=0){
-			auxiliar[0]=numero[0];
-			auxiliar[1]=numero[2];
+		if (numero[2]!=0){
+			auxiliar[0]=numero[2];
+			auxiliar[1]=numero[3];
 		}
-		else if(numero[0]==0){
+		else if(numero[1]!=0){
 			auxiliar[0]=numero[1];
 			auxiliar[1]=numero[2];
 			z=1;	
@@ -835,7 +835,7 @@ rule "Analiza cuando 1P 1F"
 	
 		for (int i=0;i<=tamaño_array;i++){
 		if (y==0 && z==0){	
-			if ((auxiliar[0]!=generador.getNumerosDisponibles().get(i))&&(auxiliar[1]!=generador.getNumerosDisponibles().get(i)) &&(numero[1]!=generador.getNumerosDisponibles().get(i))&&(numero[3]!=generador.getNumerosDisponibles().get(i))&&(generador.getNumerosDisponibles().get(i)!=0)){
+			if ((auxiliar[0]!=generador.getNumerosDisponibles().get(i))&&(auxiliar[1]!=generador.getNumerosDisponibles().get(i)) &&(numero[1]!=generador.getNumerosDisponibles().get(i))&&(numero[0]!=generador.getNumerosDisponibles().get(i))&&(generador.getNumerosDisponibles().get(i)!=0)){
 				auxiliar[2]=generador.getNumerosDisponibles().get(i);
 				y=1;
 				}		
@@ -849,7 +849,7 @@ rule "Analiza cuando 1P 1F"
 		}
 		for (int i=0;i<=tamaño_array;i++){
 		if (x==0 && a==0){	
-			if ((auxiliar[0]!=generador.getNumerosDisponibles().get(i))&&(auxiliar[1]!=generador.getNumerosDisponibles().get(i))&&(numero[1]!=generador.getNumerosDisponibles().get(i))&&(numero[3]!=generador.getNumerosDisponibles().get(i))&&(auxiliar[2]!=generador.getNumerosDisponibles().get(i))&&(generador.getNumerosDisponibles().get(i)!=0)){
+			if ((auxiliar[0]!=generador.getNumerosDisponibles().get(i))&&(auxiliar[1]!=generador.getNumerosDisponibles().get(i))&&(numero[1]!=generador.getNumerosDisponibles().get(i))&&(numero[0]!=generador.getNumerosDisponibles().get(i))&&(auxiliar[2]!=generador.getNumerosDisponibles().get(i))&&(generador.getNumerosDisponibles().get(i)!=0)){
 				auxiliar[3]=generador.getNumerosDisponibles().get(i);
 				x=1;
 				}		
@@ -934,7 +934,7 @@ rule "Analiza cuando 1P 2F"
 			System.out.println("Al encontrar 2 fijas y una 1pica, se busca mantienen 2 fijas y se cambian de posicion otro numero");			
 			it.add(un.get(2));
 			it.add(un.get(3));
-			it.add(un.get(0));
+			//it.add(un.get(0));
 			for(Integer i : (List<Integer>)$nd){
 				if(!un.contains(i) && !it.contains(i) && it.size() < 4){
 					it.add(i);
@@ -1025,7 +1025,7 @@ rule "Analiza cuando 0P 2F"
 		Integer[] intento = new Integer[$ng];
 		List<Integer> similares = new ArrayList<>();
 		if($n.size() == 1){
-			System.out.println("Al encontrar 2 fijas mantengo las primeras y cambio las restantesas");
+			System.out.println("Al encontrar 2 fijas mantengo las  primeras y cambio las restantesas");
 			List<Integer> it = new ArrayList<>();
 			it.add(un.get(0));
 			it.add(un.get(1));
