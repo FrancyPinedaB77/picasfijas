@@ -826,14 +826,14 @@ rule "Analiza cuando 1P 1F"
 			auxiliar[0]=numero[2];
 			auxiliar[1]=numero[3];
 		}
-		else if(numero[1]!=0){
+		else if(numero[2]==0){
 			auxiliar[0]=numero[1];
 			auxiliar[1]=numero[2];
 			z=1;	
 			a=1;	
 		}
 	
-		for (int i=0;i<=tamaño_array;i++){
+		for (int i=tamaño_array-1;i>=0;i--){
 		if (y==0 && z==0){	
 			if ((auxiliar[0]!=generador.getNumerosDisponibles().get(i))&&(auxiliar[1]!=generador.getNumerosDisponibles().get(i)) &&(numero[1]!=generador.getNumerosDisponibles().get(i))&&(numero[0]!=generador.getNumerosDisponibles().get(i))&&(generador.getNumerosDisponibles().get(i)!=0)){
 				auxiliar[2]=generador.getNumerosDisponibles().get(i);
@@ -884,6 +884,7 @@ rule "Analiza cuando 1P 0F" //Francy
 		eval(($ultimaRespuesta.getAciertos().get(TipoRespuesta.PICAS) == 1) && ($ultimaRespuesta.getAciertos().get(TipoRespuesta.FIJAS) == 0))
 	then
 		Integer[] ultimoNum = (Integer[]) $n.get($n.size() - 1);
+		Integer[] numero = (Integer[])$n.get($n.size() -1);
 		List<Integer> un = Arrays.asList(ultimoNum);
 		Integer[] intento = new Integer[$ng];
 		List<Integer> similares = new ArrayList<>();
@@ -892,8 +893,8 @@ rule "Analiza cuando 1P 0F" //Francy
 		
 		// Primer intento, toma dos primeros
 		int p=2;
-		if(p == 2){
-			System.out.println("Al encontrar una pica, se busca verificar si las dos primeras cifras corresponden a una parte de la solucion al cambiar sus posiciones");			
+		if(numero[1]!=0){
+			System.out.println("Al encontrar una pica, un numero se cambia de posicion y se cambian los 3 restantes para aumentar las picas o fijas");			
 			it.add(un.get(1));
 			//it.add(un.get(0));
 			for(Integer i : (List<Integer>)$nd){
@@ -905,7 +906,19 @@ rule "Analiza cuando 1P 0F" //Francy
 				}
 			}
 			intento = it.toArray(new Integer[it.size()]);
-			//h.agregarNumero(intento);
+		}
+		else if(numero[1]==0){
+			System.out.println("Al encontrar una pica, un numero se cambia de posicion y se cambian los 3 restantes para aumentar las picas o fijas");			
+			it.add(un.get(2));
+			for(Integer i : (List<Integer>)$nd){
+				if(!un.contains(i) && !it.contains(i) && it.size() < 4){
+					it.add(i);
+				}
+				else if(it.size() == 4){
+					break;
+				}
+			}
+			intento = it.toArray(new Integer[it.size()]);
 		}
 		h.agregarNumero(intento);
 		System.out.println("Intento " + $n.size() + ": " + Arrays.toString(intento));			
