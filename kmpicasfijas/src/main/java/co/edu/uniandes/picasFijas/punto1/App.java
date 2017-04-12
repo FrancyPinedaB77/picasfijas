@@ -34,7 +34,7 @@ public class App {
 	 */
 	private static void agregarASesion(KieSession kSession) {
 		
-		Integer[] primerIntento = new Integer[]{2, 5, 3, 9};
+		Integer[] primerIntento = new Integer[]{1, 2, 3, 4};
 		List<Integer[]> intentos = new ArrayList<>();
 		intentos.add(primerIntento);
 		List<Respuesta> respuestasHumano = new ArrayList<>();
